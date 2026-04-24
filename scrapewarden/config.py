@@ -23,8 +23,22 @@ class ScrapeWardenConfig:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "ScrapeWardenConfig":
         """Build config from a plain dict (e.g. Scrapy settings)."""
-        rps = float(data.get("SCRAPEWARDEN_REQUESTS_PER_SECOND", _DEFAULTS["SCRAPEWARDEN_REQUESTS_PER_SECOND"]))
-        burst = int(data.get("SCRAPEWARDEN_BURST_SIZE", _DEFAULTS["SCRAPEWARDEN_BURST_SIZE"]))
+        try:
+            rps = float(data.get("SCRAPEWARDEN_REQUESTS_PER_SECOND", _DEFAULTS["SCRAPEWARDEN_REQUESTS_PER_SECOND"]))
+        except (TypeError, ValueError) as exc:
+            raise ValueError(
+                f"SCRAPEWARDEN_REQUESTS_PER_SECOND must be a number, got "
+                f"{data.get('SCRAPEWARDEN_REQUESTS_PER_SECOND')!r}"
+            ) from exc
+
+        try:
+            burst = int(data.get("SCRAPEWARDEN_BURST_SIZE", _DEFAULTS["SCRAPEWARDEN_BURST_SIZE"]))
+        except (TypeError, ValueError) as exc:
+            raise ValueError(
+                f"SCRAPEWARDEN_BURST_SIZE must be an integer, got "
+                f"{data.get('SCRAPEWARDEN_BURST_SIZE')!r}"
+            ) from exc
+
         overrides = data.get("SCRAPEWARDEN_DOMAIN_OVERRIDES", {})
 
         if rps <= 0:
