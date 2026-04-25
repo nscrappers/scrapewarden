@@ -89,3 +89,19 @@ class SessionTracker:
 
     def reset(self, domain: str) -> None:
         self._sessions.pop(domain, None)
+
+    def summary(self, domain: str) -> Dict[str, object]:
+        """Return a summary dict of statistics for the given domain.
+
+        Returns an empty dict if the domain has not been seen.
+        """
+        if domain not in self._sessions:
+            return {}
+        session = self._sessions[domain]
+        return {
+            "domain": domain,
+            "total_requests": session.total_requests,
+            "failure_rate": session.failure_rate,
+            "recent_requests": session.recent_request_count(),
+            "last_seen": session.last_seen,
+        }
